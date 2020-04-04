@@ -23,8 +23,7 @@
       "pre-commit": "npm run test && npm run lint"
     }
   },
-  "dependencies": {
-  },
+  "dependencies": {},
   "devDependencies": {
     "@babel/core": "7.9.0",
     "@babel/preset-env": "7.9.5",
