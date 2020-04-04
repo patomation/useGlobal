@@ -22,7 +22,10 @@ module.exports = {
   roots: [
     '<rootDir>/src'
   ],
-  setupFiles: ['./jest.setup.js'],
+  setupFiles: [
+    './jest.setup.js',
+    'jest-localstorage-mock'
+  ],
   testEnvironment: 'node',
   testPathIgnorePatterns: [
     // "\\\\node_modules\\\\",

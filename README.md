@@ -1,6 +1,6 @@
 
 # React NPM Package Starter
-
+A react hook to use global local state
 
 ## Installation
 ```
@@ -14,9 +14,46 @@ npm install my-component --save
 ## Usage
 
 ```javascript
-import { MyComponent } from 'my-component'
+import { useGlobal } from '@patomation/useglobal'
 
-<MyComponent>
-  Nice
-</MyComponent>
+const Component = (): React.ReactElement => {
+  const [state, setState] = useGlobal({ color: 'red' })
+
+  const { color } = state
+
+  return (
+    <div style={{
+      color: color as string
+    }}>
+
+      {`My Color is ${color}`}
+
+      <button onClick={(): void => {
+        setState({ color: 'blue' })
+      }}>
+        {'Change Color'}
+      </button>
+
+    </div>
+  )
+}
 ```
+
+
+## Know issues
+### Jest testing
+If you are testing with jest you will need to mock ```localStorage```.
+I used ```jest-localstorage-mock``` and include it in my jest setup files config. See ```jest.config.js```.
+
+#### ```jest.config.js``` Example
+```javascript
+module.exports = {
+  ...
+  setupFiles: [
+    'jest-localstorage-mock'
+  ]
+}
+
+```
+
+

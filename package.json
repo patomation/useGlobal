@@ -1,6 +1,6 @@
 {
-  "name": "my-component",
-  "version": "1.0.0",
+  "name": "@patomation/useglobal",
+  "version": "1.0.0-beta1",
   "main": "lib/index.cjs.js",
   "module": "lib/index.esm.js",
   "types": "lib/index.d.ts",
@@ -24,7 +24,8 @@
       "pre-commit": "npm run test && npm run lint"
     }
   },
-  "dependencies": {},
+  "dependencies": {
+  },
   "devDependencies": {
     "@babel/core": "^7.8.6",
     "@babel/preset-env": "^7.8.6",
@@ -49,6 +50,7 @@
     "eslint-plugin-standard": "^4.0.1",
     "husky": "^4.2.3",
     "jest": "^25.1.0",
+    "jest-localstorage-mock": "^2.4.0",
     "jsdom": "^16.2.0",
     "jsdom-global": "^3.0.2",
     "nodemon": "^2.0.2",
