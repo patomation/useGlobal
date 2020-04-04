@@ -1,6 +1,6 @@
 {
-  "name": "my-component",
-  "version": "1.0.0",
+  "name": "@patomation/useglobal",
+  "version": "1.0.0-beta1",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "files": [
@@ -23,7 +23,8 @@
       "pre-commit": "npm run test && npm run lint"
     }
   },
-  "dependencies": {},
+  "dependencies": {
+  },
   "devDependencies": {
     "@babel/core": "7.9.0",
     "@babel/preset-env": "7.9.5",
