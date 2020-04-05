@@ -3,8 +3,20 @@ import { mount } from 'enzyme'
 
 import { useGlobal } from './index'
 
+interface MyState {
+  color: string
+  nestedObject?: {
+    background: string
+  }
+}
+
 const Component = (): React.ReactElement => {
-  const [state, setState] = useGlobal({ color: 'red' })
+  const [state, setState] = useGlobal<MyState>({
+    color: 'red',
+    nestedObject: {
+      background: '#000000'
+    }
+  })
 
   const { color } = state
 
@@ -16,7 +28,8 @@ const Component = (): React.ReactElement => {
         })
       }}
       style={{
-        color: color as string
+        color: color,
+        background: state.nestedObject.background
       }}>
       {color}
     </button>
