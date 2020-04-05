@@ -1,19 +1,10 @@
 import { useState, useEffect } from 'react'
 
-export interface SetState {
-  (newState: object, undoRedo?: boolean): void
+export interface SetState<S> {
+  (newState: S, undoRedo?: boolean): void
   undo: () => void
   redo: () => void
 }
-
-export interface State {
-  [key: string]: string | number
-}
-
-export type UseGlobal = (initialState?: object) => [
-  State,
-  SetState
-]
 
 // array of listeners
 const listeners = []
@@ -23,7 +14,7 @@ let state = {}
 const undoHistory = [JSON.parse(JSON.stringify(state))]
 let redoHistory = []
 // set state handler
-const setState: SetState = (newState, undoRedo) => {
+const setState = (newState, undoRedo): void => {
   if (undoRedo) {
     state = { ...newState }
   } else {
@@ -73,7 +64,7 @@ setState.redo = (): void => {
 
 const storedState = JSON.parse(localStorage.getItem('state')) || {}
 
-export const useGlobal: UseGlobal = (initialState: object) => {
+export const useGlobal = <S extends object>(initialState: S): [S, SetState<S>] => {
   // If initial state is defined
   if (initialState !== undefined) {
     // For each key in initial state object
@@ -105,5 +96,5 @@ export const useGlobal: UseGlobal = (initialState: object) => {
   }, [newListener])
 
   // Return object and handler function
-  return [state, setState]
+  return [state as S, setState]
 }
