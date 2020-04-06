@@ -24,15 +24,6 @@ const setState = (newState, undoRedo): void => {
     // Merge state with new state
     state = { ...state, ...newState }
   }
-  // BACKUP TO LOCAL STORAGE
-  localStorage.setItem('state', JSON.stringify(state))
-
-  // trigger events for each subscribed listener
-  listeners.forEach((listener) => {
-    // Pass through the new state object to subscriber's local state
-    listener(state)
-  })
-}
 
 setState.undo = (): void => {
   if (undoHistory.length > 0) {
@@ -44,7 +35,6 @@ setState.undo = (): void => {
     redoHistory.push(state)
     setState(lastState, true)
   }
-}
 
 setState.redo = (): void => {
   if (redoHistory.length > 0) {
@@ -55,10 +45,10 @@ setState.redo = (): void => {
     // Add back to undo history
     undoHistory.push(lastState)
     setState(lastState, true)
-  }
-}
 
-const storedState = JSON.parse(localStorage.getItem('state')) || {}
+  }
+
+  const storedState = JSON.parse(localStorage.getItem('state')) || {}
 
 export const useGlobal = <S extends object>(initialState?: S): [S, SetState<S>] => {
   // If initial state is defined
@@ -74,7 +64,7 @@ export const useGlobal = <S extends object>(initialState?: S): [S, SetState<S>] 
   }
 
   // Create new listener useState handler function
-  const newListener = useState()[1]
+  const newListener = useState<S>()[1]
 
   // Use effect once
   useEffect(() => {

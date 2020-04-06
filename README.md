@@ -13,17 +13,21 @@ npm install my-component --save
 
 ## Usage
 
-```javascript
+```typescript
 import { useGlobal } from '@patomation/useglobal'
 
+interface MyGlobalState {
+  color: string
+}
+
 const Component = (): React.ReactElement => {
-  const [state, setState] = useGlobal({ color: 'red' })
+  const [state, setState] = useGlobal<MyGlobalState>({ color: 'red' })
 
   const { color } = state
 
   return (
     <div style={{
-      color: color as string
+      color: color
     }}>
 
       {`My Color is ${color}`}
