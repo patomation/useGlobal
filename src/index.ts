@@ -35,23 +35,19 @@ const setState = (newState, undoRedo): void => {
 }
 
 setState.undo = (): void => {
-  console.log(undoHistory.length)
-  console.log(undoHistory)
   if (undoHistory.length > 0) {
-    console.log('undo', undoHistory.length)
     // use last undo
     const lastState = undoHistory[undoHistory.length - 1]
     // Remove from undo history
     undoHistory.pop()
     // Add to redo history
-    redoHistory.push(lastState)
+    redoHistory.push(state)
     setState(lastState, true)
   }
 }
 
 setState.redo = (): void => {
   if (redoHistory.length > 0) {
-    console.log('redo')
     // use last undo
     const lastState = redoHistory[redoHistory.length - 1]
     // Remove from redo history
@@ -64,11 +60,11 @@ setState.redo = (): void => {
 
 const storedState = JSON.parse(localStorage.getItem('state')) || {}
 
-export const useGlobal = <S extends object>(initialState: S): [S, SetState<S>] => {
+export const useGlobal = <S extends object>(initialState?: S): [S, SetState<S>] => {
   // If initial state is defined
   if (initialState !== undefined) {
     // For each key in initial state object
-    Object.keys(initialState || {}).forEach(key => {
+    Object.keys(initialState).forEach(key => {
       // If state key value is undefined then set it with our initial value
       if (state[key] === undefined) {
         // Use localStorage or  initial value
