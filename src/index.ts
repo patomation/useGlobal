@@ -1,76 +1,60 @@
 import { useState, useEffect } from 'react'
 
-export interface SetState<State> {
-  (newState: State, undoRedo?: boolean): void
+export interface SetState<S> {
+  (newState: S, undoRedo?: boolean): void
   undo: () => void
   redo: () => void
 }
 
-export const useGlobal = <S extends object>(initialState: S): [S, SetState<S>] => {
-  // array of listeners
-  const listeners = []
-  // state object
-  let state = {}
-  // undo redo history
-  const undoHistory = [JSON.parse(JSON.stringify(state))]
-  let redoHistory = []
-  // set state handler
-  const setState = (newState, undoRedo): void => {
-    console.log('set State', newState)
-
-    if (undoRedo) {
-      state = { ...newState }
-    } else {
-      undoHistory.push(JSON.parse(JSON.stringify(state)))
-      // Reset redo history
-      redoHistory = []
-      // Merge state with new state
-      state = { ...state, ...newState }
-    }
-    // BACKUP TO LOCAL STORAGE
-    localStorage.setItem('state', JSON.stringify(state))
-
-    // trigger events for each subscribed listener
-    listeners.forEach((listener) => {
-      // Pass through the new state object to subscriber's local state
-      listener(state)
-    })
+// array of listeners
+const listeners = []
+// state object
+let state = {}
+// undo redo history
+const undoHistory = [JSON.parse(JSON.stringify(state))]
+let redoHistory = []
+// set state handler
+const setState = (newState, undoRedo): void => {
+  if (undoRedo) {
+    state = { ...newState }
+  } else {
+    undoHistory.push(JSON.parse(JSON.stringify(state)))
+    // Reset redo history
+    redoHistory = []
+    // Merge state with new state
+    state = { ...state, ...newState }
   }
 
-  setState.undo = (): void => {
-    console.log(undoHistory.length)
-    console.log(undoHistory)
-    if (undoHistory.length > 0) {
-      console.log('undo', undoHistory.length)
-      // use last undo
-      const lastState = undoHistory[undoHistory.length - 1]
-      // Remove from undo history
-      undoHistory.pop()
-      // Add to redo history
-      redoHistory.push(lastState)
-      setState(lastState, true)
-    }
+setState.undo = (): void => {
+  if (undoHistory.length > 0) {
+    // use last undo
+    const lastState = undoHistory[undoHistory.length - 1]
+    // Remove from undo history
+    undoHistory.pop()
+    // Add to redo history
+    redoHistory.push(state)
+    setState(lastState, true)
   }
 
-  setState.redo = (): void => {
-    if (redoHistory.length > 0) {
-      console.log('redo')
-      // use last undo
-      const lastState = redoHistory[redoHistory.length - 1]
-      // Remove from redo history
-      redoHistory.pop()
-      // Add back to undo history
-      undoHistory.push(lastState)
-      setState(lastState, true)
-    }
+setState.redo = (): void => {
+  if (redoHistory.length > 0) {
+    // use last undo
+    const lastState = redoHistory[redoHistory.length - 1]
+    // Remove from redo history
+    redoHistory.pop()
+    // Add back to undo history
+    undoHistory.push(lastState)
+    setState(lastState, true)
+
   }
 
   const storedState = JSON.parse(localStorage.getItem('state')) || {}
 
+export const useGlobal = <S extends object>(initialState?: S): [S, SetState<S>] => {
   // If initial state is defined
   if (initialState !== undefined) {
     // For each key in initial state object
-    Object.keys(initialState || {}).forEach(key => {
+    Object.keys(initialState).forEach(key => {
       // If state key value is undefined then set it with our initial value
       if (state[key] === undefined) {
         // Use localStorage or  initial value
