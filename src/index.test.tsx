@@ -1,75 +1,135 @@
 import * as React from 'react'
-import { mount } from 'enzyme'
-
+import { useEffect } from 'react'
+import { render, unmountComponentAtNode } from 'react-dom'
+import { act } from 'react-dom/test-utils'
 import { useGlobal } from './index'
 
-interface MyState {
-  color: string
-  nestedObject?: {
-    background?: string
+let container = null
+beforeEach(() => {
+  // setup a DOM element as a render target
+  container = document.createElement('div')
+  document.body.appendChild(container)
+})
+
+afterEach(() => {
+  // cleanup on exiting
+  unmountComponentAtNode(container)
+  container.remove()
+  container = null
+})
+
+const SetsInitialState = (): React.ReactElement => {
+  interface State {
+    color: string
   }
-}
-
-const ComponentA = (): React.ReactElement => {
-  const [state, setState] = useGlobal({
-    color: 'red'
-    // nestedObject: {
-    //   background: '#000000'
-    // }
-  })
-
-  const { color } = state
-
-  const handleSetColor = (): void => {
-    setState({
-      color: 'green'
-    })
-  }
-
+  const [state] = useGlobal<State>({ color: 'red' })
   return (
-    <div className='component-a'
-      style={{
-        color: color
-      }}>
-      <button onClick={handleSetColor}>Set Color</button>
-      {color}
-    </div>
-  )
-}
-const ComponentB = (): React.ReactElement => {
-  const [state] = useGlobal({ color: '' })
-
-  const { color } = state
-
-  return (
-    <div className='component-b'
-      style={{
-        color: color
-      }}>
-      {color}
-    </div>
+    <div>{state.color}</div>
   )
 }
 
-const App = (): React.ReactElement => {
+const GlobalConsumer = (): React.ReactElement => {
+  interface State {
+    color: string
+  }
+  const [state] = useGlobal<State>()
+  return (
+    <div>{state.color}</div>
+  )
+}
+
+const GlobalSetter = ({ newColor }): React.ReactElement => {
+  interface State {
+    color: string
+  }
+  const [state, setState] = useGlobal<State>()
+  useEffect(() => {
+    setState({ color: newColor })
+  }, [newColor])
+  return (
+    <div>{state.color}</div>
+  )
+}
+
+const UndoRedo = (): React.ReactElement => {
+  interface State {
+    color: string
+  }
+  const [state, setState] = useGlobal<State>()
   return (
     <div>
-      <ComponentA />
-      <ComponentB />
+      <button className='set-yellow' onClick={() => setState({ color: 'yellow' })}>Undo</button>
+      <button className='undo' onClick={setState.undo}>Undo</button>
+      <button className='redo' onClick={setState.redo}>Redo</button>
+      <p>{state.color}</p>
     </div>
   )
 }
-
 describe('useGlobal', () => {
-  it('renders and clicks to change color', () => {
-    const component = mount(<App />)
+  it('starts with an initial state', () => {
+    act(() => {
+      render(<SetsInitialState />, container)
+      expect(container.textContent).toBe('red')
+    })
+  })
 
-    expect(component.find('.component-a').props().style.color).toEqual('red')
-    expect(component.find('.component-b').props().style.color).toEqual('red')
+  it('global consumer gets state', () => {
+    act(() => {
+      render(<GlobalConsumer />, container)
+      expect(container.textContent).toBe('red')
+    })
+  })
 
-    component.find('button').simulate('click')
+  it('sets the global state', () => {
+    act(() => {
+      render(<GlobalSetter newColor='blue' />, container)
+    })
+  })
 
-    expect(component.find('.component-a').props().style.color).toEqual('green')
-    expect(component.find('.component-b').props().style.color).toEqual('green')
+  it('global consumer gets new state', () => {
+    act(() => {
+      render(<GlobalConsumer />, container)
+      expect(container.textContent).toBe('blue')
+    })
+  })
+
+  it('once global state is set initialState is ignored for the same key', () => {
+    act(() => {
+      render(<SetsInitialState />, container)
+      expect(container.textContent).toBe('blue')
+    })
+  })
+
+  it('handles undo / redo', () => {
+    render(<UndoRedo/>, container)
+    const p = document.querySelector('p')
+    const setYellow = document.querySelector('.set-yellow')
+    const undo = document.querySelector('.undo')
+    const redo = document.querySelector('.redo')
+    expect(p.innerHTML).toBe('blue')
+    setYellow.dispatchEvent(new MouseEvent('click', { bubbles: true }))
+    expect(p.innerHTML).toBe('yellow')
+    undo.dispatchEvent(new MouseEvent('click', { bubbles: true }))
+    expect(p.innerHTML).toBe('blue')
+    redo.dispatchEvent(new MouseEvent('click', { bubbles: true }))
+    expect(p.innerHTML).toBe('yellow')
+  })
+
+  it('handles undo / redo history exceeded', () => {
+    render(<UndoRedo/>, container)
+    const p = document.querySelector('p')
+    const undo = document.querySelector('.undo')
+    const redo = document.querySelector('.redo')
+    expect(p.innerHTML).toBe('yellow')
+    // Click undo 10 times
+    for (let i = 0; i <= 10; i++) {
+      undo.dispatchEvent(new MouseEvent('click', { bubbles: true }))
+    }
+    expect(p.innerHTML).toBe('')
+    // Click redo 10 times
+    for (let i = 0; i <= 10; i++) {
+      redo.dispatchEvent(new MouseEvent('click', { bubbles: true }))
+    }
+    expect(p.innerHTML).toBe('yellow')
   })
 })
