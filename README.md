@@ -1,12 +1,21 @@
+# useGlobal
 
-# React NPM Package Starter
-A react hook to use global local state
+A react hook for global local state
+
+features:
+
+- multiple listener system
+- undo/redo
+- Generic Types support
 
 ## Installation
+
 ```
 yarn add my-component
 ```
+
 or
+
 ```
 npm install my-component --save
 ```
@@ -39,13 +48,15 @@ const Component = (): React.ReactElement => {
 }
 ```
 
-
 ## Know issues
-### Jest testing
-If you are testing with jest you will need to mock ```localStorage```.
-I used ```jest-localstorage-mock``` and include it in my jest setup files config. See ```jest.config.js```.
 
-#### ```jest.config.js``` Example
+### Jest testing
+
+If you are testing with jest you will need to mock `localStorage`.
+I used `jest-localstorage-mock` and include it in my jest setup files config. See `jest.config.js`.
+
+#### `jest.config.js` Example
+
 ```javascript
 module.exports = {
   ...
@@ -55,5 +66,3 @@ module.exports = {
 }
 
 ```
-
-

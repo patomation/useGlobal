@@ -11,21 +11,28 @@ const listeners = []
 // state object
 let state = {}
 // undo redo history
-const undoHistory = [JSON.parse(JSON.stringify(state))]
+const undoHistory = [
+  JSON.parse(JSON.stringify(state)),
+]
 let redoHistory = []
 // set state handler
 const setState = (newState, undoRedo): void => {
   if (undoRedo) {
     state = { ...newState }
   } else {
-    undoHistory.push(JSON.parse(JSON.stringify(state)))
+    undoHistory.push(
+      JSON.parse(JSON.stringify(state))
+    )
     // Reset redo history
     redoHistory = []
     // Merge state with new state
     state = { ...state, ...newState }
   }
   // BACKUP TO LOCAL STORAGE
-  localStorage.setItem('state', JSON.stringify(state))
+  localStorage.setItem(
+    'state',
+    JSON.stringify(state)
+  )
 
   // trigger events for each subscribed listener
   listeners.forEach((listener) => {
@@ -37,7 +44,8 @@ const setState = (newState, undoRedo): void => {
 setState.undo = (): void => {
   if (undoHistory.length > 0) {
     // use last undo
-    const lastState = undoHistory[undoHistory.length - 1]
+    const lastState =
+      undoHistory[undoHistory.length - 1]
     // Remove from undo history
     undoHistory.pop()
     // Add to redo history
@@ -49,7 +57,8 @@ setState.undo = (): void => {
 setState.redo = (): void => {
   if (redoHistory.length > 0) {
     // use last undo
-    const lastState = redoHistory[redoHistory.length - 1]
+    const lastState =
+      redoHistory[redoHistory.length - 1]
     // Remove from redo history
     redoHistory.pop()
     // Add back to undo history
@@ -58,17 +67,21 @@ setState.redo = (): void => {
   }
 }
 
-const storedState = JSON.parse(localStorage.getItem('state')) || {}
+const storedState =
+  JSON.parse(localStorage.getItem('state')) || {}
 
-export const useGlobal = <S extends object>(initialState?: S): [S, SetState<S>] => {
+export const useGlobal = <S extends object>(
+  initialState?: S
+): [S, SetState<S>] => {
   // If initial state is defined
   if (initialState !== undefined) {
     // For each key in initial state object
-    Object.keys(initialState).forEach(key => {
+    Object.keys(initialState).forEach((key) => {
       // If state key value is undefined then set it with our initial value
       if (state[key] === undefined) {
         // Use localStorage or  initial value
-        state[key] = storedState[key] || initialState[key]
+        state[key] =
+          storedState[key] || initialState[key]
       }
     })
   }
