@@ -1,6 +1,6 @@
 {
-  "name": "useglobal",
-  "version": "1.0.0-beta3",
+  "name": "@patomation/useglobal",
+  "version": "1.0.0",
   "main": "build/index.js",
   "types": "build/index.d.ts",
   "files": [
