@@ -33,6 +33,7 @@
     "@babel/preset-typescript": "7.18.6",
     "@commitlint/cli": "17.4.2",
     "@commitlint/config-conventional": "17.4.2",
+    "@testing-library/react": "^13.4.0",
     "@types/jest": "^29.4.0",
     "@types/node": "18.11.18",
     "@types/react": "18.0.27",
@@ -44,9 +45,8 @@
     "jest-localstorage-mock": "^2.4.26",
     "jsdom": "21.1.0",
     "jsdom-global": "3.0.2",
-    "nodemon": "2.0.20",
+    "nodemon": "3.1.4",
     "nyc": "15.1.0",
-    "onchange": "7.1.0",
     "prettier": "2.8.3",
     "pretty-quick": "3.1.3",
     "react": "18.2.0",
@@ -54,8 +54,7 @@
     "standard-version": "^9.5.0",
     "ts-jest": "29.0.5",
     "tsconfigs": "5.0.0",
-    "typescript": "4.9.5",
-    "wait-on": "7.0.1"
+    "typescript": "4.9.5"
   },
   "peerDependencies": {
     "prop-types": "^15.7.2",
@@ -88,12 +87,7 @@
   "keywords": [
     "typescript"
   ],
-  "ava": {
-    "files": [
-      "build/**/*.test.js"
-    ]
-  },
-  "dependencies": {
-    "@testing-library/react": "^13.4.0"
+  "overrides": {
+    "@types/scheduler": "< 0.23.0"
   }
 }
